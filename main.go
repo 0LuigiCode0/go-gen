@@ -8,8 +8,9 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"test/tmp"
 	"text/template"
+
+	"github.com/0LuigiCode0/go-gen/tmp"
 
 	"github.com/0LuigiCode0/library/logger"
 )
