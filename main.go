@@ -12,7 +12,7 @@ import (
 
 	"github.com/0LuigiCode0/go-gen/tmp"
 
-	"github.com/0LuigiCode0/library/logger"
+	"github.com/0LuigiCode0/logger"
 )
 
 type Config struct {
@@ -99,6 +99,22 @@ func parseConfig(configName string) (*Config, error) {
 func (c *Config) isOneTCP() bool {
 	for _, v := range c.Handlers {
 		if v == tmp.TCP {
+			return true
+		}
+	}
+	return false
+}
+func (c *Config) isOneMQTT() bool {
+	for _, v := range c.Handlers {
+		if v == tmp.MQTT {
+			return true
+		}
+	}
+	return false
+}
+func (c *Config) isOneWS() bool {
+	for _, v := range c.Handlers {
+		if v == tmp.WS {
 			return true
 		}
 	}
@@ -431,7 +447,13 @@ func (c *Config) bUtils() error {
 	if err = t.Execute(fl, c); err != nil {
 		return fmt.Errorf("file %v cannot write: %v", tmp.FileComposeLocal, err)
 	}
-	t, err = template.New("mod").Parse(tmp.ModTmp)
+	t, err = template.New("mod").Funcs(template.FuncMap{
+		"isOneTCP":      c.isOneTCP,
+		"isOneWS":       c.isOneWS,
+		"isOneMQTT":     c.isOneMQTT,
+		"isOnePostgres": c.isOnePostgres,
+		"isOneMongo":    c.isOneMongo,
+	}).Parse(tmp.ModTmp)
 	if err != nil {
 		return err
 	}
