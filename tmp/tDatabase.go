@@ -69,7 +69,7 @@ func (d *db) Close() { {{range $i,$k := .DBS}}{{if eq $k "` + string(Mongodb) + 
 {{range $i,$k := .DBS}}{{if eq $k "` + string(Mongodb) + `"}}
 {{printf "func (d *db) %v() *mongo.Database { return d._%v.conn.(*mongo.Client).Database(d._%v.dbName)" (title $i) $i $i}}}{{else if eq $k "` + string(Postgres) + `"}}
 {{printf "func (d *db) %v() *sql.DB { return d._%v.conn.(*sql.DB)}" (title $i) $i}}{{end}}
-{{printf "func (d *db) %vStore() %vStore.Store { return d._%v.store}" (title $i) $i $i}}{{end}}
+{{printf "func (d *db) %vStore() %vStore.Store { return d._%v.store.(%vStore.Store)}" (title $i) $i $i $i}}{{end}}
 
 func connPostgres(v *helper.DbConfig) (conn *sql.DB, err error) {
 	conn, err = sql.Open("postgres", fmt.Sprintf("user=%v password=%v host=%v port=%v dbname=%v sslmode=disable", v.User, v.Password, v.Host, v.Port, v.Name))
