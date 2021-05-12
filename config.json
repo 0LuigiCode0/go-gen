@@ -1,7 +1,7 @@
 {
    "module_name": "root",
    "go_version": 1.16,
-   "work_dir": "",
+   "work_dir": "root",
    "dbs": {
       "postgres": "postgres",
       "mongo": "mongodb",

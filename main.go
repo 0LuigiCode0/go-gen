@@ -209,7 +209,7 @@ func (c *Config) bDatabase() error {
 func (c *Config) bStore() error {
 	pathDir := filepath.Join(c.WorkDir, tmp.DirStore)
 	os.MkdirAll(pathDir, 0777)
-	for i := range c.DBS {
+	for i, v := range c.DBS {
 		pathDirStore := filepath.Join(pathDir, i)
 		pathFileStore := filepath.Join(pathDirStore, tmp.FileStore)
 		os.MkdirAll(pathDirStore, 0777)
@@ -224,7 +224,7 @@ func (c *Config) bStore() error {
 		if err != nil {
 			return err
 		}
-		if err = t.Execute(f, i); err != nil {
+		if err = t.Execute(f, []interface{}{i, v}); err != nil {
 			return fmt.Errorf("file %v cannot write: %v", tmp.FileStore, err)
 		}
 	}
