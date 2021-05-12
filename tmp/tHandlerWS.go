@@ -43,7 +43,7 @@ func (h *handler) addConn(userID int64, ipAddr string, connect net.Conn) {
 	}
 }
 
-func (h *handler) deleteConn(userID int64, ipAddr string) {
+func (h *handler) DeleteConn(userID int64, ipAddr string) {
 	h.rw.Lock()
 	defer h.rw.Unlock()
 	if _, ok := h.conn[userID]; ok {
@@ -60,4 +60,6 @@ func (h *handler) GetConn(userID int64) map[string]net.Conn {
 	defer h.rw.Unlock()
 	res := h.conn[userID]
 	return res
-}`
+}
+
+func (h *handler) GetAll() map[int64]map[string]net.Conn { return h.conn }`
