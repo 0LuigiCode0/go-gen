@@ -38,7 +38,6 @@ func (h *handler) initTicker() {
 			ticker.Stop()
 			return
 		case <-ticker.C:
-			h.rw.Lock()
 			for u, conns := range h.conn {
 				for ip, conn := range conns {
 					if err := wsutil.WriteServerText(conn, []byte{'1'}); err != nil {
@@ -46,7 +45,6 @@ func (h *handler) initTicker() {
 					}
 				}
 			}
-			h.rw.Unlock()
 		}
 	}
 }`
