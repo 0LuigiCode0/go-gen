@@ -15,7 +15,7 @@ type Helper interface {
 
 type HelperForHandler interface { {{if gt (len .DBS) 0}}
 	database.DBForHandler {{end}} {{if isOneTCP}}
-	Helper() hubHelper.Helper
+	Helper() Helper
 	Config() *helper.Config
 	Router() *mux.Router
 	SetHandler(hh http.Handler){{end}}
