@@ -16,6 +16,7 @@ type handler struct {
 
 func InitHandler(hub hubHelper.HelperForHandler, conf *helper.HandlerConfig) (H {{print (index . 0)}}Helper.Handler, err error) {
 	h := &handler{HelperForHandler: hub}
+	H = h
 
 	h.Router().Use(h.middleware)
 	h.SetHandler(applyCORS(h.Router()))
