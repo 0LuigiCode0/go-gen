@@ -115,7 +115,8 @@ const (
 	ErrorSave
 	ErrorUpdate
 	ErrorDelete
-	ErorrAccessDenied
+	ErorrAccessDeniedToken
+	ErorrAccessDeniedParams
 	ErrorInvalidParams
 	ErrorParse
 	ErrorOpen
