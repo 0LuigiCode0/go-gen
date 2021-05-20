@@ -19,7 +19,7 @@ const ( {{range $i,$k := .Handlers}}
 )
 
 type hub struct {
-	hubHelper.Helper {{if gt (len .DBS) 0}}
+	helper hubHelper.Helper {{if gt (len .DBS) 0}}
 	database.DBForHandler{{end}}
 	router  *mux.Router
 	handler http.Handler
@@ -45,7 +45,7 @@ func InitHub({{if gt (len .DBS) 0}}db database.DB, {{end}}conf *helper.Config) (
 		helper.Log.Servicef("handler %q initializing", {{printf "_%v" $i}})
 	}{{end}}
 
-	hh.Helper = hubHelper.InitHelper(hh)
+	hh.helper = hubHelper.InitHelper(hh)
 
 	H = hh.handler
 	helper.Log.Service("handler initializing")
