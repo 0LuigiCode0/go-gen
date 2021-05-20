@@ -118,6 +118,8 @@ const (
 	ErorrAccessDenied
 	ErrorInvalidParams
 	ErrorParse
+	ErrorOpen
+	ErrorClose
 	ErrorWrite
 	ErrorRead
 	ErrorGenerate
