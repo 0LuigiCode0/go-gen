@@ -7,6 +7,7 @@ import (
 	{{printf "\"%v/core/database\"" $module}}{{end}} {{range $i,$k := .Handlers}}
 	{{printf "%vHelper \"%v/handlers/%v/helper\"" $i $module $i }}{{end}}
 	{{if isOneTCP}}
+	{{printf "\"%v/helper\"" $module}}
 	"github.com/gorilla/mux"{{end}}
 )
 
@@ -27,8 +28,8 @@ type HandlerForHelper interface { {{range $i,$k := .Handlers}}
 	Config() *helper.Config
 }
 
-type helper struct {
+type help struct {
 	HandlerForHelper
 }
 
-func InitHelper(H HandlerForHelper) Helper { return &helper{HandlerForHelper: H} }`
+func InitHelper(H HandlerForHelper) Helper { return &help{HandlerForHelper: H} }`
