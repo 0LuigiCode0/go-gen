@@ -40,4 +40,20 @@ func InitCtx() {
 }
 func InitLogger() {
 	Log = logger.InitLogger("")
+}
+
+func Dispatch(f interface{}, args ...interface{}) {
+	Wg.Add(1)
+	ff := reflect.ValueOf(f)
+	if ff.Kind() == reflect.Func {
+		in := []reflect.Value{}
+		for _, arg := range args {
+			in = append(in, reflect.ValueOf(arg))
+		}
+
+		go func() {
+			ff.Call(in)
+			Wg.Done()
+		}()
+	}
 }`
