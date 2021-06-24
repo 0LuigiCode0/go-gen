@@ -1,7 +1,2 @@
-github.com/0LuigiCode0/library v0.0.11 h1:GWPxcvtlckrYdO9lKVfuanVvHMNcDLDd5Lkc0qEzxl8=
-github.com/0LuigiCode0/library v0.0.11/go.mod h1:z/u7kc0K7hnaZSryWhI3/aGvPSa+WXHIzTn6U4CdVI8=
-github.com/0LuigiCode0/logger v0.0.1 h1:21tEX35TCgm1GXU+HAYD7J/fMNLURz/akGP+bUhzMas=
-github.com/0LuigiCode0/logger v0.0.1/go.mod h1:7xEsRxVClzX8mheoMTwFPrgXu3y/hDHwACZdR/LaPK4=
-github.com/0LuigiCode0/logger v0.0.5 h1:r4zxko7d0xbqGXCarEOdUSQ8ZpLtqayamg5DAaVzUoU=
-github.com/0LuigiCode0/logger v0.0.5/go.mod h1:D62k9fJo9UMzZ1FBTVpDSm01u5tIhKNfxIgSBykBdTg=
-github.com/lib/pq v1.10.1/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
+github.com/0LuigiCode0/logger v1.0.1 h1:nG5aEsTlA0xOfVEfHR0ITLBQZnQgqnEpOM/MdEGdu6o=
+github.com/0LuigiCode0/logger v1.0.1/go.mod h1:D62k9fJo9UMzZ1FBTVpDSm01u5tIhKNfxIgSBykBdTg=
