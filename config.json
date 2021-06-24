@@ -4,8 +4,7 @@
    "work_dir": "root",
    "dbs": {
       "postgres": "postgres",
-      "mongo": "mongodb",
-      "lora": "postgres"
+      "mongo": "mongodb"
    },
    "handlers": {
       "roots": "tcp",

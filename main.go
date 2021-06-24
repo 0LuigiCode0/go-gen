@@ -15,7 +15,8 @@ import (
 	"github.com/0LuigiCode0/logger"
 )
 
-type Config struct {
+//config модель конфигураций
+type config struct {
 	ModuleName string                     `json:"module_name"`
 	GoVersion  float32                    `json:"go_version"`
 	DBS        map[string]tmp.DBType      `json:"dbs"`
@@ -23,6 +24,7 @@ type Config struct {
 	WorkDir    string                     `json:"work_dir"`
 }
 
+//глобальная инициализация логгера
 var log = logger.InitLogger("")
 var fileConfig string
 
@@ -31,7 +33,7 @@ func main() {
 	flag.Parse()
 	conf, err := parseConfig(fileConfig)
 	if err != nil {
-		log.Fatalf("cannot parse tmp.Config: %v", err)
+		log.Fatalf("cannot parse tmp.config: %v", err)
 	}
 	if len(conf.Handlers) == 0 {
 		log.Fatal("handlers si null")
@@ -71,8 +73,8 @@ func main() {
 	}
 }
 
-//ParseConfig парсит конфиг
-func parseConfig(configName string) (*Config, error) {
+//parseConfig парсит конфиг
+func parseConfig(configName string) (*config, error) {
 	_, err := os.Stat(configName)
 	if err != nil {
 		return nil, fmt.Errorf("file not found: %v", configName)
@@ -86,7 +88,7 @@ func parseConfig(configName string) (*Config, error) {
 	if err != nil {
 		return nil, fmt.Errorf("read body is invalid : %v", err)
 	}
-	data := new(Config)
+	data := new(config)
 	err = json.Unmarshal(buf, data)
 	if err != nil {
 		return nil, fmt.Errorf("unmarshal is invalid : %v", err)
@@ -96,7 +98,8 @@ func parseConfig(configName string) (*Config, error) {
 	return data, err
 }
 
-func (c *Config) isOneTCP() bool {
+//isOneTCP возвращает true при первом вхождении tcp, нужно для template
+func (c *config) isOneTCP() bool {
 	for _, v := range c.Handlers {
 		if v == tmp.TCP {
 			return true
@@ -104,7 +107,9 @@ func (c *Config) isOneTCP() bool {
 	}
 	return false
 }
-func (c *Config) isOneMQTT() bool {
+
+//isOneTCP возвращает true при первом вхождении mqtt, нужно для template
+func (c *config) isOneMQTT() bool {
 	for _, v := range c.Handlers {
 		if v == tmp.MQTT {
 			return true
@@ -112,7 +117,9 @@ func (c *Config) isOneMQTT() bool {
 	}
 	return false
 }
-func (c *Config) isOneWS() bool {
+
+//isOneTCP возвращает true при первом вхождении websocket, нужно для template
+func (c *config) isOneWS() bool {
 	for _, v := range c.Handlers {
 		if v == tmp.WS {
 			return true
@@ -120,7 +127,9 @@ func (c *Config) isOneWS() bool {
 	}
 	return false
 }
-func (c *Config) isOnePostgres() bool {
+
+//isOneTCP возвращает true при первом вхождении postgres, нужно для template
+func (c *config) isOnePostgres() bool {
 	for _, v := range c.DBS {
 		if v == tmp.Postgres {
 			return true
@@ -128,7 +137,9 @@ func (c *Config) isOnePostgres() bool {
 	}
 	return false
 }
-func (c *Config) isOneMongo() bool {
+
+//isOneTCP возвращает true при первом вхождении mongodb, нужно для template
+func (c *config) isOneMongo() bool {
 	for _, v := range c.DBS {
 		if v == tmp.Mongodb {
 			return true
@@ -137,7 +148,8 @@ func (c *Config) isOneMongo() bool {
 	return false
 }
 
-func (c *Config) bMain() error {
+//bMain генерирует core/cmd/main.go
+func (c *config) bMain() error {
 	pathDir := filepath.Join(c.WorkDir, tmp.DirCore, tmp.DirCmd)
 	pathFile := filepath.Join(pathDir, tmp.FileMain)
 	os.MkdirAll(pathDir, 0777)
@@ -158,7 +170,8 @@ func (c *Config) bMain() error {
 	return nil
 }
 
-func (c *Config) bServer() error {
+//bServer генерирует core/server.go - отвечает за запуск всех модулей и ожидание завершения
+func (c *config) bServer() error {
 	pathDir := filepath.Join(c.WorkDir, tmp.DirCore)
 	pathFile := filepath.Join(pathDir, tmp.FileServer)
 	os.MkdirAll(pathDir, 0777)
@@ -179,7 +192,8 @@ func (c *Config) bServer() error {
 	return nil
 }
 
-func (c *Config) bDatabase() error {
+//bDatabase генерирует core/database/database.go - отвечает за подключение к бд и генирацию сторов
+func (c *config) bDatabase() error {
 	pathDir := filepath.Join(c.WorkDir, tmp.DirCore, tmp.DirDatabase)
 	pathFile := filepath.Join(pathDir, tmp.FileDatabase)
 	os.MkdirAll(pathDir, 0777)
@@ -206,7 +220,8 @@ func (c *Config) bDatabase() error {
 	return nil
 }
 
-func (c *Config) bStore() error {
+//bStore генерирует store/*/store.go - отвечает за CRUD с определенной бд
+func (c *config) bStore() error {
 	pathDir := filepath.Join(c.WorkDir, tmp.DirStore)
 	os.MkdirAll(pathDir, 0777)
 	for i, v := range c.DBS {
@@ -231,7 +246,10 @@ func (c *Config) bStore() error {
 	return nil
 }
 
-func (c *Config) bHub() error {
+//bHub генерирует пакет hub.
+//включает в себя hub/hub.go отвечающий за инициализацию всех web интерфейсов,
+//хелпер с функциями используемыми в web интерфейсах hub/helper/helper.go
+func (c *config) bHub() error {
 	pathDir := filepath.Join(c.WorkDir, tmp.DirHub)
 	pathDirHelper := filepath.Join(pathDir, tmp.DirHelper)
 	pathFileHub := filepath.Join(pathDir, tmp.FileHub)
@@ -272,7 +290,11 @@ func (c *Config) bHub() error {
 	return nil
 }
 
-func (c *Config) bHandlers() error {
+//bHandlers генерирует пакет web интерфейса.
+//Включает в себя сам инициализатор интерфейса handlers/*/handler.go,
+//middleware  handlers/*/middleware.go,
+//хелпер в котором описан интерфейс который избавляет от циклических зависимостей handlers/*/helper/helper.go
+func (c *config) bHandlers() error {
 	pathDir := filepath.Join(c.WorkDir, tmp.DirHandlers)
 	os.MkdirAll(pathDir, 0777)
 	for i, v := range c.Handlers {
@@ -348,7 +370,10 @@ func (c *Config) bHandlers() error {
 	return nil
 }
 
-func (c *Config) bHelper() error {
+//bHelper генерирует пакет хелпера.
+//Включат в себя хранилище всех моделей и переменных используемых в проекте helper/model.go,
+//хранилище полезнфх функции helper/function.go,
+func (c *config) bHelper() error {
 	pathDir := filepath.Join(c.WorkDir, tmp.DirHelper)
 	pathFileFunc := filepath.Join(pathDir, tmp.FileFunctions)
 	pathFileModel := filepath.Join(pathDir, tmp.FileModel)
@@ -374,7 +399,9 @@ func (c *Config) bHelper() error {
 	return nil
 }
 
-func (c *Config) bUtils() error {
+//bHelper генерирует главный конфиг source/configs/configServe.json,
+//а также папку source/uploads для хранения загруженных файлов и go.mod go.sum
+func (c *config) bUtils() error {
 	pathDir := filepath.Join(c.WorkDir, tmp.DirSource)
 	pathDirConf := filepath.Join(pathDir, tmp.DirConfigs)
 	pathDirUplo := filepath.Join(pathDir, tmp.DirUploads)
