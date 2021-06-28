@@ -70,7 +70,7 @@ func (d *db) Close() { {{range $i,$k := .DBS}}{{if eq $k "` + string(Mongodb) + 
 {{printf "func (d *db) %v() *mongo.Database { return d._%v.conn.(*mongo.Client).Database(d._%v.dbName)" (title $i) $i $i}}}{{else if eq $k "` + string(Postgres) + `"}}
 {{printf "func (d *db) %v() *sql.DB { return d._%v.conn.(*sql.DB)}" (title $i) $i}}{{end}}
 {{printf "func (d *db) %vStore() %vStore.Store { return d._%v.store.(%vStore.Store)}" (title $i) $i $i $i}}{{end}}
-
+{{if isOnePostgres}}
 func connPostgres(v *helper.DbConfig) (conn *sql.DB, err error) {
 	conn, err = sql.Open("postgres", fmt.Sprintf("user=%v password=%v host=%v port=%v dbname=%v sslmode=disable", v.User, v.Password, v.Host, v.Port, v.Name))
 	if err != nil {
@@ -80,8 +80,8 @@ func connPostgres(v *helper.DbConfig) (conn *sql.DB, err error) {
 		return conn, fmt.Errorf("db not pinged: %v", err)
 	}
 	return
-}
-
+}{{end}}
+{{if isOneMongo}}
 func connMongo(v *helper.DbConfig) (conn *mongo.Client, err error) {
 	opt := options.Client().ApplyURI(fmt.Sprintf("mongodb://%v:%v", v.Host, v.Port)).SetAuth(options.Credential{AuthMechanism: "SCRAM-SHA-256", Username: v.User, Password: v.Password})
 	conn, err = mongo.Connect(helper.Ctx, opt)
@@ -92,4 +92,4 @@ func connMongo(v *helper.DbConfig) (conn *mongo.Client, err error) {
 		return conn, fmt.Errorf("db not pinged: %v", err)
 	}
 	return
-}`
+}{{end}}`
