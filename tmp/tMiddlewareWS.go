@@ -41,7 +41,7 @@ func (h *handler) initTicker() {
 			for u, conns := range h.conn {
 				for ip, conn := range conns {
 					if err := wsutil.WriteServerText(conn, []byte{'1'}); err != nil {
-						h.deleteConn(u, ip)
+						h.DeleteConn(u, ip)
 					}
 				}
 			}
