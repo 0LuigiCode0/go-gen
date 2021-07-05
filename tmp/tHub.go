@@ -20,7 +20,7 @@ const ( {{range $i,$k := .Handlers}}
 
 type hub struct {
 	helper hubHelper.Helper {{if gt (len .DBS) 0}}
-	database.DBForHandler{{end}}
+	database.DB{{end}}
 	router  *mux.Router
 	handler http.Handler
 	config  *helper.Config
@@ -30,7 +30,7 @@ type hub struct {
 
 func InitHub({{if gt (len .DBS) 0}}db database.DB, {{end}}conf *helper.Config) (H http.Handler, err error) {
 	hh := &hub{ {{if gt (len .DBS) 0}}
-		DBForHandler: db,{{end}}
+		DB: db,{{end}}
 		router:       mux.NewRouter(),
 		config:       conf,
 	}
