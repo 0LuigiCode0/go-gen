@@ -47,6 +47,8 @@ func InitHub({{if gt (len .DBS) 0}}db database.DB, {{end}}conf *helper.Config) (
 
 	hh.helper = hubHelper.InitHelper(hh)
 
+	hh.Router().PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(helper.UploadDir))))
+
 	H = hh.handler
 	helper.Log.Service("handler initializing")
 	return
