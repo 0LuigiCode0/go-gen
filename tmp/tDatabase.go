@@ -3,8 +3,9 @@ package tmp
 const DatabaseTmp = `package database{{$module := .ModuleName}}
 
 import (
-	"database/sql"
-	"fmt"
+	"fmt" 
+	{{if isOnePostgres}}
+	"database/sql"{{end}}
 	{{printf "\"%v/helper\"" $module}}
 	{{range $i,$k := .DBS}}
 	{{printf "%vStore \"%v/store/%v\"" $i $module $i}}{{end}}
