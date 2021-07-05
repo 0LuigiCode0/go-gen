@@ -44,14 +44,20 @@ func InitLogger() {
 }
 
 func Dispatch(f interface{}, args ...interface{}) {
-	Wg.Add(1)
 	ff := reflect.ValueOf(f)
 	if ff.Kind() == reflect.Func {
-		in := []reflect.Value{}
-		for _, arg := range args {
-			in = append(in, reflect.ValueOf(arg))
+		in := make([]reflect.Value, ff.Type().NumIn())
+		for i, arg := range args {
+			v := reflect.ValueOf(arg)
+			if v.Type().ConvertibleTo(ff.Type().In(i)) {
+				in[i] = v.Convert(ff.Type().In(i))
+			} else {
+				Log.Warningf("parameter: %v, expected %v got %v", i+1, ff.Type().In(i), v.Type())
+				return
+			}
 		}
 
+		Wg.Add(1)
 		go func() {
 			ff.Call(in)
 			Wg.Done()
