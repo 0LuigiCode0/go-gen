@@ -1,6 +1,6 @@
 package tmp
 
-const MiddlewareTCPTmp = `package {{printf "%vHandler" (index . 0)}}
+const MiddlewareTCPTmp = `package {{printf "%v_handler" (index . 0)}}
 
 import (
 	"net/http"

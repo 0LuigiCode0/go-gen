@@ -4,6 +4,7 @@ const HelperModelTmp = `package helper
 
 import (
 	"context"
+	"os"
 	"sync"
 
 	"github.com/0LuigiCode0/logger"
@@ -13,6 +14,7 @@ var Ctx context.Context
 var CloseCtx context.CancelFunc
 var Log *logger.Logger
 var Wg sync.WaitGroup
+var C chan os.Signal = make(chan os.Signal, 3)
 
 //Config модель конфига
 type Config struct {

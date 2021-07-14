@@ -1,16 +1,20 @@
 package tmp
 
 const (
-	DirCore     = "core"
-	DirCmd      = "cmd"
-	DirDatabase = "database"
-	DirHub      = "hub"
-	DirHelper   = "helper"
-	DirHandlers = "handlers"
-	DirStore    = "store"
-	DirSource   = "source"
-	DirConfigs  = "configs"
-	DirUploads  = "uploads"
+	DirCore          = "core"
+	DirCmd           = "cmd"
+	DirDatabase      = "database"
+	DirHub           = "hub"
+	DirHubHelper     = "hub_helper"
+	DirHelper        = "helper"
+	DirHandlers      = "handlers"
+	DirHandler       = "%v_handler"
+	DirHandlerHelper = "%v_helper"
+	DirStore         = "store"
+	DirDBSStore      = "%v_store"
+	DirSource        = "source"
+	DirConfigs       = "configs"
+	DirUploads       = "uploads"
 )
 const (
 	FileMain          = "main.go"

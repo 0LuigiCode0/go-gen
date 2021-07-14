@@ -1,6 +1,6 @@
 package tmp
 
-const StoreTmp = `package {{printf "%vStore" (index . 0)}}
+const StoreTmp = `package {{printf "%v_store" (index . 0)}}
 {{if eq (index . 1) "` + string(Mongodb) + `"}}
 import "go.mongodb.org/mongo-driver/mongo"{{else if eq (index . 1) "` + string(Postgres) + `"}}
 import "database/sql"{{end}}

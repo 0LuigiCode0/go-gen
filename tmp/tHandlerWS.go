@@ -1,24 +1,24 @@
 package tmp
 
-const HandlerWSTmp = `package  {{printf "%vHandler" (index . 0)}}
+const HandlerWSTmp = `package  {{printf "%v_handler" (index . 0)}}
 
 import (
 	"net"
 	"sync"
-	{{printf "%vHelper \"%v/handlers/%v/helper\"" (index . 0) (index . 1) (index . 0)}}
+	{{printf "\"%v/handlers/%v_handler/%v_helper\"" (index . 1) (index . 0) (index . 0)}}
 	{{printf "\"%v/helper\"" (index . 1)}}
-	{{printf "hubHelper \"%v/hub/helper\"" (index . 1)}}
+	{{printf "\"%v/hub/hub_helper\"" (index . 1)}}
 )
 
 type handler struct {
-	hubHelper.HelperForHandler
+	hub_helper.HelperForHandler
 
 	conn map[int64]map[string]net.Conn
 
 	rw sync.Mutex
 }
 
-func InitHandler(hub hubHelper.HelperForHandler, conf *helper.HandlerConfig) (H {{print (index . 0)}}Helper.Handler, err error) {
+func InitHandler(hub hub_helper.HelperForHandler, conf *helper.HandlerConfig) (H {{print (index . 0)}}_helper.Handler, err error) {
 	h := &handler{
 		HelperForHandler: hub,
 		conn:             map[int64]map[string]net.Conn{},

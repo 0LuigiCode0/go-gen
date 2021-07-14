@@ -225,7 +225,7 @@ func (c *config) bStore() error {
 	pathDir := filepath.Join(c.WorkDir, tmp.DirStore)
 	os.MkdirAll(pathDir, 0777)
 	for i, v := range c.DBS {
-		pathDirStore := filepath.Join(pathDir, i)
+		pathDirStore := filepath.Join(pathDir, fmt.Sprintf(tmp.DirDBSStore, i))
 		pathFileStore := filepath.Join(pathDirStore, tmp.FileStore)
 		os.MkdirAll(pathDirStore, 0777)
 
@@ -251,7 +251,7 @@ func (c *config) bStore() error {
 //хелпер с функциями используемыми в web интерфейсах hub/helper/helper.go
 func (c *config) bHub() error {
 	pathDir := filepath.Join(c.WorkDir, tmp.DirHub)
-	pathDirHelper := filepath.Join(pathDir, tmp.DirHelper)
+	pathDirHelper := filepath.Join(pathDir, tmp.DirHubHelper)
 	pathFileHub := filepath.Join(pathDir, tmp.FileHub)
 	pathFileHelper := filepath.Join(pathDirHelper, tmp.FileHelper)
 	os.MkdirAll(pathDir, 0777)
@@ -298,8 +298,8 @@ func (c *config) bHandlers() error {
 	pathDir := filepath.Join(c.WorkDir, tmp.DirHandlers)
 	os.MkdirAll(pathDir, 0777)
 	for i, v := range c.Handlers {
-		pathDirHandler := filepath.Join(pathDir, i)
-		pathDiHelper := filepath.Join(pathDirHandler, tmp.DirHelper)
+		pathDirHandler := filepath.Join(pathDir, fmt.Sprintf(tmp.DirHandler, i))
+		pathDiHelper := filepath.Join(pathDirHandler, fmt.Sprintf(tmp.DirHandlerHelper, i))
 		pathFileHandler := filepath.Join(pathDirHandler, tmp.FileHandler)
 		pathFileMiddleware := filepath.Join(pathDirHandler, tmp.FileHubMiddleware)
 		pathFileHelper := filepath.Join(pathDiHelper, tmp.FileHelper)

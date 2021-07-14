@@ -1,3 +1,3 @@
 package tmp
 
-const MiddleWareMQTTTmp = `package {{printf "%vHandler" (index . 0)}}`
+const MiddleWareMQTTTmp = `package {{printf "%v_handler" (index . 0)}}`

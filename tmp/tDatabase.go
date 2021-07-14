@@ -5,14 +5,14 @@ const DatabaseTmp = `package database{{$module := .ModuleName}}
 import (
 	"fmt" 
 	{{if isOnePostgres}}
-	"database/sql"{{end}}
+	"database/sql"
+	_ "github.com/lib/pq"{{end}}
 	{{printf "\"%v/helper\"" $module}}
 	{{range $i,$k := .DBS}}
-	{{printf "%vStore \"%v/store/%v\"" $i $module $i}}{{end}}
+	{{printf "\"%v/store/%v_store\"" $module $i }}{{end}}
 	{{if isOneMongo}}
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"{{end}}{{if isOnePostgres}}
-	_ "github.com/lib/pq"{{end}}
+	"go.mongodb.org/mongo-driver/mongo/options"{{end}}
 )
 
 const ( {{range $i,$k := .DBS}}
@@ -22,12 +22,12 @@ const ( {{range $i,$k := .DBS}}
 type DB interface { {{range $i,$k := .DBS}}{{if eq $k "` + string(Mongodb) + `"}}
 	{{printf "%v() *mongo.Database" (title $i)}}{{else if eq $k "` + string(Postgres) + `"}}
 	{{printf "%v() *sql.DB" (title $i)}}{{end}}
-	{{printf "%vStore() %vStore.Store" (title $i) $i}}{{end}}
+	{{printf "%v_store() %v_store.Store" (title $i) $i}}{{end}}
 	Close()
 }
 
 type DBForHandler interface { {{range $i,$k := .DBS}}
-	{{printf "%vStore() %vStore.Store" (title $i) $i}}{{end}}
+	{{printf "%v_store() %v_store.Store" (title $i) $i}}{{end}}
 }
 
 type db struct { {{range $i,$k := .DBS}}
@@ -51,7 +51,7 @@ func InitDB(conf *helper.Config) (DB DB, err error) {
 			return nil, fmt.Errorf("db not initializing: %v", err)
 		}
 		db.{{printf "_%v" $i}} = &d{
-			store:  {{print $i}}Store.InitStore({{if eq $k "` + string(Mongodb) + `"}}conn.(*mongo.Client).Database(v.Name){{else if eq $k "` + string(Postgres) + `"}}conn.(*sql.DB){{end}}),
+			store:  {{print $i}}_store.InitStore({{if eq $k "` + string(Mongodb) + `"}}conn.(*mongo.Client).Database(v.Name){{else if eq $k "` + string(Postgres) + `"}}conn.(*sql.DB){{end}}),
 			dbName: v.Name,
 			conn:   conn,
 		}
@@ -70,7 +70,7 @@ func (d *db) Close() { {{range $i,$k := .DBS}}{{if eq $k "` + string(Mongodb) + 
 {{range $i,$k := .DBS}}{{if eq $k "` + string(Mongodb) + `"}}
 {{printf "func (d *db) %v() *mongo.Database { return d._%v.conn.(*mongo.Client).Database(d._%v.dbName)" (title $i) $i $i}}}{{else if eq $k "` + string(Postgres) + `"}}
 {{printf "func (d *db) %v() *sql.DB { return d._%v.conn.(*sql.DB)}" (title $i) $i}}{{end}}
-{{printf "func (d *db) %vStore() %vStore.Store { return d._%v.store.(%vStore.Store)}" (title $i) $i $i $i}}{{end}}
+{{printf "func (d *db) %v_store() %v_store.Store { return d._%v.store.(%v_store.Store)}" (title $i) $i $i $i}}{{end}}
 {{if isOnePostgres}}
 func connPostgres(v *helper.DbConfig) (conn *sql.DB, err error) {
 	conn, err = sql.Open("postgres", fmt.Sprintf("user=%v password=%v host=%v port=%v dbname=%v sslmode=disable", v.User, v.Password, v.Host, v.Port, v.Name))
