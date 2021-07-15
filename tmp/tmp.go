@@ -21,7 +21,7 @@ const (
 	FileDatabase      = "database.go"
 	FileServer        = "server.go"
 	FileModel         = "model.go"
-	FileFunctions     = "functions.go"
+	FileFunction      = "function.go"
 	FileHelper        = "helper.go"
 	FileHandler       = "handler.go"
 	FileHubMiddleware = "middleware.go"

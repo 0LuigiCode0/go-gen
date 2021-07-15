@@ -253,7 +253,8 @@ func (c *config) bHub() error {
 	pathDir := filepath.Join(c.WorkDir, tmp.DirHub)
 	pathDirHelper := filepath.Join(pathDir, tmp.DirHubHelper)
 	pathFileHub := filepath.Join(pathDir, tmp.FileHub)
-	pathFileHelper := filepath.Join(pathDirHelper, tmp.FileHelper)
+	pathFileHelperModel := filepath.Join(pathDirHelper, tmp.FileModel)
+	pathFileHelperFucntion := filepath.Join(pathDirHelper, tmp.FileFunction)
 	os.MkdirAll(pathDir, 0777)
 	os.MkdirAll(pathDirHelper, 0777)
 
@@ -262,11 +263,16 @@ func (c *config) bHub() error {
 		return fmt.Errorf("file %v cannot open: %v", tmp.FileHub, err)
 	}
 	defer fhub.Close()
-	fhelp, err := os.OpenFile(pathFileHelper, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0777)
+	fmodel, err := os.OpenFile(pathFileHelperModel, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0777)
 	if err != nil {
-		return fmt.Errorf("file %v cannot open: %v", tmp.FileHelper, err)
+		return fmt.Errorf("file %v cannot open: %v", tmp.FileModel, err)
 	}
-	defer fhelp.Close()
+	defer fmodel.Close()
+	ffunc, err := os.OpenFile(pathFileHelperFucntion, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0777)
+	if err != nil {
+		return fmt.Errorf("file %v cannot open: %v", tmp.FileFunction, err)
+	}
+	defer ffunc.Close()
 
 	fmap := template.FuncMap{
 		"title":    strings.Title,
@@ -280,12 +286,19 @@ func (c *config) bHub() error {
 	if err = t.Execute(fhub, c); err != nil {
 		return fmt.Errorf("file %v cannot write: %v", tmp.FileHub, err)
 	}
-	t, err = template.New("helper").Funcs(fmap).Parse(tmp.HubHelperTmp)
+	tmodel, err := template.New("helper").Funcs(fmap).Parse(tmp.HubHelperModelTmp)
 	if err != nil {
 		return err
 	}
-	if err = t.Execute(fhelp, c); err != nil {
-		return fmt.Errorf("file %v cannot write: %v", tmp.FileHelper, err)
+	tfunc, err := template.New("helper").Funcs(fmap).Parse(tmp.HubHelperFuncTmp)
+	if err != nil {
+		return err
+	}
+	if err = tmodel.Execute(fmodel, c); err != nil {
+		return fmt.Errorf("file %v cannot write: %v", tmp.FileModel, err)
+	}
+	if err = tfunc.Execute(ffunc, c); err != nil {
+		return fmt.Errorf("file %v cannot write: %v", tmp.FileFunction, err)
 	}
 	return nil
 }
@@ -302,7 +315,8 @@ func (c *config) bHandlers() error {
 		pathDiHelper := filepath.Join(pathDirHandler, fmt.Sprintf(tmp.DirHandlerHelper, i))
 		pathFileHandler := filepath.Join(pathDirHandler, tmp.FileHandler)
 		pathFileMiddleware := filepath.Join(pathDirHandler, tmp.FileHubMiddleware)
-		pathFileHelper := filepath.Join(pathDiHelper, tmp.FileHelper)
+		pathFileHelperModel := filepath.Join(pathDiHelper, tmp.FileModel)
+		pathFileHelperFucntion := filepath.Join(pathDiHelper, tmp.FileFunction)
 		os.MkdirAll(pathDirHandler, 0777)
 		os.MkdirAll(pathDiHelper, 0777)
 
@@ -316,13 +330,18 @@ func (c *config) bHandlers() error {
 			return fmt.Errorf("file %v cannot open: %v", tmp.FileHubMiddleware, err)
 		}
 		defer fmidl.Close()
-		fhelp, err := os.OpenFile(pathFileHelper, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0777)
+		fmodel, err := os.OpenFile(pathFileHelperModel, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0777)
 		if err != nil {
-			return fmt.Errorf("file %v cannot open: %v", tmp.FileHelper, err)
+			return fmt.Errorf("file %v cannot open: %v", tmp.FileModel, err)
 		}
-		defer fhelp.Close()
+		defer fmodel.Close()
+		ffunc, err := os.OpenFile(pathFileHelperFucntion, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0777)
+		if err != nil {
+			return fmt.Errorf("file %v cannot open: %v", tmp.FileFunction, err)
+		}
+		defer ffunc.Close()
 
-		var thub, tmiddl, thelp *template.Template
+		var thub, tmiddl, tmodel, tfunc *template.Template
 		switch v {
 		case tmp.TCP:
 			thub, err = template.New("handler").Parse(tmp.HandlerTCPTmp)
@@ -352,7 +371,11 @@ func (c *config) bHandlers() error {
 				return err
 			}
 		}
-		thelp, err = template.New("helper").Parse(string(tmp.HandlerHelperTmp))
+		tmodel, err = template.New("helper").Parse(string(tmp.HandlerHelperModelTmp))
+		if err != nil {
+			return err
+		}
+		tfunc, err = template.New("helper").Parse(string(tmp.HandlerHelperFuncTmp))
 		if err != nil {
 			return err
 		}
@@ -363,8 +386,11 @@ func (c *config) bHandlers() error {
 		if err = tmiddl.Execute(fmidl, []interface{}{i, c.ModuleName}); err != nil {
 			return fmt.Errorf("file %v cannot write: %v", tmp.FileHubMiddleware, err)
 		}
-		if err = thelp.Execute(fhelp, []interface{}{i, v}); err != nil {
-			return fmt.Errorf("file %v cannot write: %v", tmp.FileHelper, err)
+		if err = tfunc.Execute(ffunc, []interface{}{i, v}); err != nil {
+			return fmt.Errorf("file %v cannot write: %v", tmp.FileFunction, err)
+		}
+		if err = tmodel.Execute(fmodel, []interface{}{i, v}); err != nil {
+			return fmt.Errorf("file %v cannot write: %v", tmp.FileModel, err)
 		}
 	}
 	return nil
@@ -375,13 +401,13 @@ func (c *config) bHandlers() error {
 //хранилище полезнфх функции helper/function.go,
 func (c *config) bHelper() error {
 	pathDir := filepath.Join(c.WorkDir, tmp.DirHelper)
-	pathFileFunc := filepath.Join(pathDir, tmp.FileFunctions)
+	pathFileFunc := filepath.Join(pathDir, tmp.FileFunction)
 	pathFileModel := filepath.Join(pathDir, tmp.FileModel)
 	os.MkdirAll(pathDir, 0777)
 
 	ff, err := os.OpenFile(pathFileFunc, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0777)
 	if err != nil {
-		return fmt.Errorf("file %v cannot open: %v", tmp.FileFunctions, err)
+		return fmt.Errorf("file %v cannot open: %v", tmp.FileFunction, err)
 	}
 	defer ff.Close()
 	fm, err := os.OpenFile(pathFileModel, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0777)
@@ -391,7 +417,7 @@ func (c *config) bHelper() error {
 	defer fm.Close()
 
 	if _, err = ff.WriteString(tmp.HelperFuncTmp); err != nil {
-		return fmt.Errorf("file %v cannot write: %v", tmp.FileFunctions, err)
+		return fmt.Errorf("file %v cannot write: %v", tmp.FileFunction, err)
 	}
 	if _, err = fm.WriteString(tmp.HelperModelTmp); err != nil {
 		return fmt.Errorf("file %v cannot write: %v", tmp.FileModel, err)
